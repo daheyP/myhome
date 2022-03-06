@@ -18,12 +18,59 @@
 
     <div class="container">
         <h2>게시판</h2>
+        <div>총 건수 : <span th:text="${boards.totalElements}"></span></div><!--${#lists.size(boards)}-->
+        <form class="row g-3 d-flex justify-content-end" method="GET" th:action="@{/board/list}">
+           <div class="col-auto">
+                <label for="searchText" class="visually-hidden">검색</label>
+                <input type="text" class="form-control" id="searchText" name="searchText" th:value="${param.searchText}">
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-dark mb-3">검색</button>
+            </div>
+        </form>
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">번호</th>
+                <th scope="col">제목</th>
+                <th scope="col">작성자</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="board : ${boards}">
+                <th th:text="${board.id}">1</th>
+                <td >
+                    <a th:text="${board.title}" th:href="@{/board/form(id=${board.id})}">
+                        Mark
+                    </a>
+                </td>
+                <td th:text="${board.user.username}" >TEST</td>
+            </tr>
+            </tbody>
+        </table>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${1 == boards.pageable.pageNumber+1} ? 'disabled'">
+                    <a class="page-link" th:href="@{/board/list(searchText=${param.searchText},page=${boards.pageable.pageNumber - 1})}">Previous</a>
+                </li>                             <!--이미 $ 표시로 감싸져 있어 startPage, endPage를 감쌀 필요 X-->
+                <li class="page-item" th:classappend="${i == boards.pageable.pageNumber + 1} ? 'disabled'" th:each="i : ${#numbers.sequence(startPage,endPage)}">
+                    <a class="page-link" href="#" th:href="@{/board/list(searchText=${param.searchText},page=${i - 1})}" th:text="${i}">
+                        1
+                    </a>
+                </li>
+                <li class="page-item" th:classappend="${boards.totalPages == boards.pageable.pageNumber + 1} ? 'disabled'">
+                    <a class="page-link" th:href="@{/board/list(searchText=${param.searchText},page=${boards.pageable.pageNumber + 1})}" href="#">Next</a>
+                </li>
+            </ul>
+        </nav>
+        <div class="text-end">
+        <a type="button" class="btn btn-primary" th:href="@{/board/form}">글쓰기</a>
+        </div>
     </div>
 <!-- Optional JavaScript; choose one of the two! -->
 
 <!-- Option 1: Bootstrap Bundle with Popper -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-
+<footer th:replace="fragments/common :: footer"></footer>
 <!-- Option 2: Separate Popper and Bootstrap JS -->
 <!--
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
